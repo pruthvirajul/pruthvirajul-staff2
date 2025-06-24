@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  staff:
+    build: ./Staff
+    ports:
+      - "6942:80"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./Backend
+    ports:
+      - "3041:3041"
+    environment:
+      - PORT=3041
+      - DB_USER=postgres
+      - DB_PASSWORD=admin321
+      - DB_NAME=staff_db
+      - DB_HOST=postgres
+      - DB_PORT=5432
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:14
+    restart: always
+    ports:
+      - "5875:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin321
+      POSTGRES_DB: staff_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  pgdata:
+
